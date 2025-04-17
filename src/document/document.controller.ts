@@ -74,7 +74,7 @@ export class DocumentController {
     }
 
     try {
-      await this.documentService.deleteUserDocuments(body.selectedDocuments, userId);
+      await this.documentService.deleteUserDocuments(body.selectedDocuments);
       return { message: 'Documentos deletados com sucesso' };
     } catch (error) {
       console.error(error);

@@ -49,7 +49,7 @@ export class DocumentService {
     }
   }
 
-  async deleteUserDocuments(documentIds: string[], userId: number): Promise<void> {
+  async deleteUserDocuments(documentIds: string[]): Promise<void> {
     const numericDocumentIds = documentIds.map(id => Number(id));
 
     await this.prisma.document.deleteMany({
