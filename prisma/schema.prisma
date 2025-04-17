@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Document {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  publicUrl String
+  content   String
+  title     String
+  resume    String    @default("Sem escritas")
+  createdAt DateTime  @default(now())
+  histories History[]
+}
+
+model History {
+  id         Int      @id @default(autoincrement())
+  documentId Int
+  messages   String
+  createdAt  DateTime @default(now())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
