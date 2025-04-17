@@ -73,7 +73,7 @@ export class DocumentService {
     await this.prisma.document.deleteMany({
       where: {
         id: { in: numericDocumentIds },
-        userId,
+        userId: Number(userId)
       },
     });
   }
