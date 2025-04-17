@@ -51,29 +51,10 @@ export class DocumentService {
 
   async deleteUserDocuments(documentIds: string[], userId: number): Promise<void> {
     const numericDocumentIds = documentIds.map(id => Number(id));
-  
-    const docsToDelete = await this.prisma.document.findMany({
-      where: {
-        id: { in: numericDocumentIds },
-        userId,
-      },
-    });
-  
-    for (const doc of docsToDelete) {
-      if (doc.publicUrl) {
-        const filePath = path.resolve('public', doc.publicUrl);
-        try {
-          await unlink(filePath);
-        } catch (err) {
-          console.warn(`Não foi possível excluir o arquivo ${filePath}`, err);
-        }
-      }
-    }
-  
+
     await this.prisma.document.deleteMany({
       where: {
         id: { in: numericDocumentIds },
-        userId: Number(userId)
       },
     });
   }
