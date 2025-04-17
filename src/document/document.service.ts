@@ -20,9 +20,7 @@ export class DocumentService {
 
   async processDocument(file: Express.Multer.File, userId: number, fileName: string) {
     try {
-      const filePath = path.join(process.cwd(), 'public', 'uploads', fileName);
 
-      await writeFile(filePath, file.buffer);
       const publicUrl = `/uploads/${fileName}`;
 
       const formData = new FormData();
