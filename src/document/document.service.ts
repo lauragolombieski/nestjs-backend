@@ -21,7 +21,7 @@ export class DocumentService {
   async processDocument(file: Express.Multer.File, userId: number, fileName: string) {
     try {
 
-      const publicUrl = `/uploads/${fileName}`;
+      const publicUrl = `/images/${fileName}`;
 
       const formData = new FormData();
       formData.append('apikey', this.apiKey);
