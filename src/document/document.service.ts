@@ -27,12 +27,13 @@ export class DocumentService {
       formData.append('apikey', this.apiKey);
       formData.append('language', 'por');
       formData.append('file', file.buffer, fileName);
+
       const response = await axios.post('https://api.ocr.space/parse/image', formData, {
         headers: formData.getHeaders(),
       });
-
+  
       const text = response.data.ParsedResults?.[0]?.ParsedText || 'Sem texto definido';
-
+  
       await this.prisma.document.create({
         data: {
           userId,
@@ -41,6 +42,7 @@ export class DocumentService {
           title: file.originalname,
         },
       });
+  
 
       return { success: true, text };
     } catch (err) {

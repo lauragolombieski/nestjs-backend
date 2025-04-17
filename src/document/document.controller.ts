@@ -13,6 +13,8 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import * as path from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentService } from './document.service';
 
@@ -24,11 +26,20 @@ export class DocumentController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadDocument(
     @UploadedFile() file: Express.Multer.File,
-    @Request() req,
+    @Request() req
   ) {
-
     const userId = req.body.id;
     const fileName = req.body.fileName
+    const imagesDir = path.join(process.cwd(), 'public', 'images');
+    
+    if (!existsSync(imagesDir)) {
+      mkdirSync(imagesDir, { recursive: true });
+    }
+
+    const filePath = path.join(imagesDir, fileName);
+
+    writeFileSync(filePath, file.buffer);
+
     if (!file) {
       throw new BadRequestException('Nenhum arquivo enviado.');
     }
