@@ -12,7 +12,6 @@ export class DocumentService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getDocumentsByUser(userId: number) {
-    console.log('aqui')
     return this.prisma.document.findMany({
       where: { userId },
     });
@@ -20,8 +19,6 @@ export class DocumentService {
 
   async processDocument(file: Express.Multer.File, userId: number, fileName: string) {
     try {
-
-      const publicUrl = `/images/${fileName}`;
 
       const formData = new FormData();
       formData.append('apikey', this.apiKey);
@@ -37,13 +34,12 @@ export class DocumentService {
       await this.prisma.document.create({
         data: {
           userId,
-          publicUrl,
           content: text,
           title: file.originalname,
+          image: file.buffer,
+          publicUrl: 'teste'
         },
       });
-  
-
       return { success: true, text };
     } catch (err) {
       console.error('Erro no processamento:', err);

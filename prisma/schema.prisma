@@ -12,6 +12,7 @@ model Document {
   id        Int       @id @default(autoincrement())
   userId    Int
   publicUrl String
+  image     Bytes
   content   String
   title     String
   resume    String    @default("Sem escritas")

@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Body,
+  Res,
   Param,
   Get,
   UploadedFile,
@@ -13,14 +14,15 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
-import * as path from 'path';
+import { Response } from 'express';
+import { NotFoundException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentService } from './document.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Controller('api/document')
 export class DocumentController {
-  constructor(private readonly documentService: DocumentService) {}
+  constructor(private readonly documentService: DocumentService, private readonly prisma: PrismaService) {}
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
@@ -30,15 +32,6 @@ export class DocumentController {
   ) {
     const userId = req.body.id;
     const fileName = req.body.fileName
-    const imagesDir = path.join(process.cwd(), 'public', 'images');
-    
-    if (!existsSync(imagesDir)) {
-      mkdirSync(imagesDir, { recursive: true });
-    }
-
-    const filePath = path.join(imagesDir, fileName);
-
-    writeFileSync(filePath, file.buffer);
 
     if (!file) {
       throw new BadRequestException('Nenhum arquivo enviado.');
@@ -50,6 +43,21 @@ export class DocumentController {
     }
 
     return this.documentService.processDocument(file, numericUserId, fileName);
+  }
+
+  @Get(':id/image')
+  async getImage(@Param('id') id: number, @Res() res: Response) {
+    const document = await this.prisma.document.findUnique({
+      where: { id: Number(id) },
+      select: { image: true },
+    });
+
+    if (!document || !document.image) {
+      throw new NotFoundException('Imagem não encontrada');
+    }
+
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.send(document.image);
   }
 
   @Get(':id')
